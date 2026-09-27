@@ -17,6 +17,13 @@ import { ConditionEvaluatorService } from './condition-evaluator.service';
 import { TwapCalculatorService } from './twap-calculator.service';
 import { StellarRelayerService } from './stellar-relayer.service';
 import { PaymasterPolicyService } from './paymaster-policy.service';
+import { DexScreenerProvider } from './providers/dexscreener.provider';
+import { GeckoTerminalProvider } from './providers/geckoterminal.provider';
+import { PythStellarProvider } from './providers/pyth-stellar.provider';
+import {
+  PriceProvider,
+  PRICE_PROVIDERS,
+} from './providers/price-provider.interface';
 
 @Module({
   imports: [
@@ -41,6 +48,14 @@ import { PaymasterPolicyService } from './paymaster-policy.service';
     //   { provide: RELAYER_QUEUE, useValue: new BullMqRelayerQueue() }
     StellarRelayerService,
     PaymasterPolicyService,
+    DexScreenerProvider,
+    GeckoTerminalProvider,
+    PythStellarProvider,
+    {
+      provide: PRICE_PROVIDERS,
+      useFactory: (...providers: PriceProvider[]) => providers,
+      inject: [DexScreenerProvider, GeckoTerminalProvider, PythStellarProvider],
+    },
     // BE-017: the transport is a seam, not a dependency. This default keeps
     // every node in one process (dev and tests). A deployment with independent
     // nodes overrides QUORUM_TRANSPORT with a RedisPubSubTransport built on its
@@ -55,6 +70,9 @@ import { PaymasterPolicyService } from './paymaster-policy.service';
     TwapCalculatorService,
     StellarRelayerService,
     PaymasterPolicyService,
+    DexScreenerProvider,
+    GeckoTerminalProvider,
+    PythStellarProvider,
   ],
 })
 export class OracleModule {}
