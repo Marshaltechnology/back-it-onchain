@@ -35,6 +35,13 @@ function base64UrlToBytes(value: string): Uint8Array {
   return Uint8Array.from(binary, (character) => character.charCodeAt(0));
 }
 
+function base64UrlToBuffer(value: string): ArrayBuffer {
+  const bytes = base64UrlToBytes(value);
+  const buffer = new ArrayBuffer(bytes.byteLength);
+  new Uint8Array(buffer).set(bytes);
+  return buffer;
+}
+
 export function isPasskeySupported(): boolean {
   return typeof window !== 'undefined' && typeof window.PublicKeyCredential !== 'undefined' && typeof navigator.credentials?.create === 'function';
 }
@@ -73,11 +80,11 @@ export async function requestPasskeyAssertion(credentialId: string, challenge: s
   const credential = await navigator.credentials.get({
     publicKey: {
       challenge: challengeBuffer(challenge),
-      allowCredentials: [{ type: 'public-key', id: base64UrlToBytes(credentialId) }],
+      allowCredentials: [{ type: 'public-key', id: base64UrlToBuffer(credentialId) }],
       userVerification: 'required',
       timeout: 60_000,
     },
-  }) as PublicKeyCredential | null;
+  })as PublicKeyCredential | null;
   if (!credential) throw new Error('Passkey approval was cancelled');
   const response = credential.response as AuthenticatorAssertionResponse;
   return {
