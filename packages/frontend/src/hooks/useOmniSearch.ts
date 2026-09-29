@@ -97,8 +97,11 @@ export function useOmniSearch(query: string, options: UseOmniSearchOptions = {})
     setError(null);
     fetchResults(debounced, controller.signal).then((next) => {
       setResults(next);
-      setRecent((current) => [debounced, ...current.filter((entry) => entry !== debounced)].slice(0, 8));
-      window.localStorage.setItem(RECENT_KEY, JSON.stringify([debounced, ...current.filter((entry) => entry !== debounced)].slice(0, 8)));
+      setRecent((current) => {
+        const updated = [debounced, ...current.filter((entry) => entry !== debounced)].slice(0, 8);
+        window.localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+        return updated;
+      });
     }).catch((caught) => {
       if (!controller.signal.aborted) setError(caught instanceof Error ? caught : new Error(String(caught)));
     }).finally(() => {

@@ -14,9 +14,9 @@ describe('buildMockAnalytics', () => {
     expect(a.reputation).not.toEqual(b.reputation);
   });
 
-  it('returns five reputation axes bounded 0–100', () => {
+  it('returns six reputation axes bounded 0–100', () => {
     const { reputation } = buildMockAnalytics('wallet');
-    expect(reputation).toHaveLength(5);
+    expect(reputation).toHaveLength(6);
     for (const axis of reputation) {
       expect(axis.value).toBeGreaterThanOrEqual(0);
       expect(axis.value).toBeLessThanOrEqual(100);
